@@ -9,7 +9,7 @@ function Dashboard() {
       </div>
     </div>
   );
-}
+};
 
 
 import { useEffect, useState } from "react";
