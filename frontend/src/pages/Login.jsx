@@ -10,24 +10,30 @@ function Login() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await loginUser(form);
 
       // Save token
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
+      localStorage.setItem("token", res.data.token);
 
       alert("Login successful");
 
       navigate("/dashboard");
-
     } catch (error) {
-      alert(error.response.data.message);
+      console.log(error);
+
+      alert(
+        error?.response?.data?.message ||
+        "Login failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,8 +62,8 @@ function Login() {
         />
         <br />
 
-        <button type="submit">
-          Login
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>

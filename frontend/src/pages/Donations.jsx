@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { addIncome, getIncome } from "../services/api";
+import { addDonation, getDonations } from "../services/api";
 
 function Donations() {
   const [form, setForm] = useState({
@@ -8,27 +8,40 @@ function Donations() {
     description: "",
   });
 
-  const [income, setIncome] = useState([]);
+  const [donations, setDonations] = useState([]);
 
-  const loadIncome = async () => {
-    const res = await getIncome();
-    setIncome(res.data);
+  const loadDonations = async () => {
+    try {
+      const res = await getDonations();
+      setDonations(res.data);
+    } catch (error) {
+      console.error("Error loading donations:", error);
+    }
   };
 
   useEffect(() => {
-    loadIncome();
+    loadDonations();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await addIncome(form);
-    setForm({ source: "", amount: "", description: "" });
-    loadIncome();
+
+    try {
+      await addDonation({
+        ...form,
+        amount: Number(form.amount),
+      });
+
+      setForm({ source: "", amount: "", description: "" });
+      loadDonations();
+    } catch (error) {
+      console.error("Error adding donation:", error);
+    }
   };
 
   return (
     <div>
-      <h1>Donations (Income)</h1>
+      <h1>Donations</h1>
 
       <form onSubmit={handleSubmit}>
         <input
@@ -53,14 +66,14 @@ function Donations() {
         />
         <br />
 
-        <button>Add Donation</button>
+        <button type="submit">Add Donation</button>
       </form>
 
       <h3>Donation List</h3>
       <ul>
-        {income.map((inc) => (
-          <li key={inc._id}>
-            {inc.source} - Ksh {inc.amount}
+        {donations.map((d) => (
+          <li key={d._id}>
+            {d.source} - Ksh {d.amount}
           </li>
         ))}
       </ul>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { addExpense, getExpenses } from "../services/api";
+import API from "../services/api";
 
 function Expenses() {
   const [form, setForm] = useState({
@@ -10,7 +11,6 @@ function Expenses() {
 
   const [expenses, setExpenses] = useState([]);
 
-  // 📥 Load expenses from backend
   const loadExpenses = async () => {
     try {
       const res = await getExpenses();
@@ -24,7 +24,6 @@ function Expenses() {
     loadExpenses();
   }, []);
 
-  // ➕ Add expense
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -46,13 +45,10 @@ function Expenses() {
     }
   };
 
-  // 🗑️ Delete expense
+  // ✅ FIXED DELETE (use API instead of fetch)
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/expenses/${id}`, {
-        method: "DELETE",
-      });
-
+      await API.delete(`/expenses/${id}`);
       loadExpenses();
     } catch (error) {
       console.log("Delete error:", error);
@@ -63,7 +59,6 @@ function Expenses() {
     <div>
       <h1>Expenses</h1>
 
-      {/* FORM */}
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Category"
@@ -96,7 +91,6 @@ function Expenses() {
         <button type="submit">Add Expense</button>
       </form>
 
-      {/* LIST */}
       <h3>Expense List</h3>
 
       <ul>

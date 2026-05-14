@@ -8,22 +8,31 @@ function Register() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await registerUser(form);
 
-      alert(res.data.message);
+      alert(res.data.message || "User registered successfully");
 
       setForm({
         name: "",
         email: "",
         password: "",
       });
-
     } catch (error) {
-      alert(error.response.data.message);
+      console.log(error);
+
+      alert(
+        error?.response?.data?.message ||
+        "Registration failed. Try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,8 +71,8 @@ function Register() {
         />
         <br />
 
-        <button type="submit">
-          Register
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
         </button>
       </form>
     </div>

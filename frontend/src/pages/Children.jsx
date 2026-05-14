@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
 
 const Children = () => {
   const [children, setChildren] = useState([]);
@@ -12,10 +12,10 @@ const Children = () => {
   // FETCH children
   const fetchChildren = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/children");
+      const res = await API.get("/children");
       setChildren(res.data);
     } catch (error) {
-      console.log(error);
+      console.log("Fetch error:", error);
     }
   };
 
@@ -23,7 +23,6 @@ const Children = () => {
     fetchChildren();
   }, []);
 
-  // HANDLE input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -32,8 +31,16 @@ const Children = () => {
   const addChild = async (e) => {
     e.preventDefault();
 
+    if (!form.name || !form.age || !form.gender) {
+      alert("Please fill all fields");
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:5000/api/children", form);
+      await API.post("/children", {
+        ...form,
+        age: Number(form.age),
+      });
 
       setForm({
         name: "",
@@ -43,7 +50,11 @@ const Children = () => {
 
       fetchChildren();
     } catch (error) {
-      console.log(error);
+      console.log("Add child error:", error);
+      alert(
+        error?.response?.data?.message ||
+        "Failed to add child"
+      );
     }
   };
 
@@ -51,14 +62,9 @@ const Children = () => {
     <div style={{ padding: "20px" }}>
       <h2>Children List</h2>
 
-      {/* FORM */}
       <form
         onSubmit={addChild}
-        style={{
-          marginBottom: "20px",
-          display: "flex",
-          gap: "10px",
-        }}
+        style={{ marginBottom: "20px", display: "flex", gap: "10px" }}
       >
         <input
           name="name"
@@ -88,34 +94,28 @@ const Children = () => {
         <button type="submit">Add Child</button>
       </form>
 
-      {/* TABLE */}
       <h3>All Children</h3>
 
-      <table
-        border="1"
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          textAlign: "left",
-        }}
-      >
+      <table border="1" style={{ width: "100%", textAlign: "left" }}>
         <thead>
           <tr>
-            <th style={{ padding: "10px" }}>Name</th>
-            <th style={{ padding: "10px" }}>Age</th>
-            <th style={{ padding: "10px" }}>Gender</th>
-            <th style={{ padding: "10px" }}>Date Admitted</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Date Admitted</th>
           </tr>
         </thead>
 
         <tbody>
           {children.map((child) => (
             <tr key={child._id}>
-              <td style={{ padding: "10px" }}>{child.name}</td>
-              <td style={{ padding: "10px" }}>{child.age}</td>
-              <td style={{ padding: "10px" }}>{child.gender}</td>
-              <td style={{ padding: "10px" }}>
-                {new Date(child.admissionDate).toLocaleDateString()}
+              <td>{child.name}</td>
+              <td>{child.age}</td>
+              <td>{child.gender}</td>
+              <td>
+                {child.admissionDate
+                  ? new Date(child.admissionDate).toLocaleDateString()
+                  : "N/A"}
               </td>
             </tr>
           ))}
