@@ -11,21 +11,20 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         const donationRes = await axios.get(
-          "http://localhost:5000/api/donations"
+          "http://localhost:5000/api/donations",
         );
-
         const expenseRes = await axios.get(
-          "http://localhost:5000/api/expenses"
+          "http://localhost:5000/api/expenses",
         );
 
         const totalDonations = donationRes.data.reduce(
           (sum, item) => sum + item.amount,
-          0
+          0,
         );
 
         const totalExpenses = expenseRes.data.reduce(
           (sum, item) => sum + item.amount,
-          0
+          0,
         );
 
         setDonations(totalDonations);

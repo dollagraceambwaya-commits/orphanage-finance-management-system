@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { addExpense, getExpenses } from "../services/api";
-import API from "../services/api";
+import { addExpense, getExpenses, getDonations } from "../services/api";
+import Balance from "../components/Balance";
 
 function Expenses() {
   const [form, setForm] = useState({
     category: "",
-    amount: 0,
+    amount: "",
     description: "",
   });
-
   const [expenses, setExpenses] = useState([]);
+  const [donations, setDonations] = useState([]);
 
   const loadExpenses = async () => {
     try {
@@ -21,34 +21,39 @@ function Expenses() {
   };
 
   useEffect(() => {
-    loadExpenses();
+    const fetchData = async () => {
+      const [expRes, incRes] = await Promise.all([
+        getExpenses(),
+        getDonations(),
+      ]);
+      setExpenses(expRes.data);
+      setDonations(incRes.data);
+    };
+    fetchData();
   }, []);
 
+  // Add expense
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!form.category || !form.amount) return;
     try {
       await addExpense({
         ...form,
         amount: Number(form.amount),
       });
-
-      setForm({
-        category: "",
-        amount: 0,
-        description: "",
-      });
-
+      setForm({ category: "", amount: "", description: "" });
       loadExpenses();
     } catch (error) {
       console.log("Add expense error:", error);
     }
   };
 
-  // ✅ FIXED DELETE (use API instead of fetch)
+  // Delete expense
   const handleDelete = async (id) => {
     try {
-      await API.delete(`/expenses/${id}`);
+      await fetch(`http://localhost:5000/api/expenses/${id}`, {
+        method: "DELETE",
+      });
       loadExpenses();
     } catch (error) {
       console.log("Delete error:", error);
@@ -59,54 +64,53 @@ function Expenses() {
     <div>
       <h1>Expenses</h1>
 
+      {/* BALANCE COMPONENT */}
+      <Balance expenses={expenses} donations={donations} />
+
+      {/* FORM */}
       <form onSubmit={handleSubmit}>
         <input
-          placeholder="Category"
+          placeholder="Category (e.g. Food, Medical)"
           value={form.category}
-          onChange={(e) =>
-            setForm({ ...form, category: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, category: e.target.value })}
         />
         <br />
-
         <input
           placeholder="Amount"
           type="number"
           value={form.amount}
-          onChange={(e) =>
-            setForm({ ...form, amount: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, amount: e.target.value })}
         />
         <br />
-
         <input
-          placeholder="Description"
+          placeholder="Description (optional)"
           value={form.description}
-          onChange={(e) =>
-            setForm({ ...form, description: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
         <br />
-
         <button type="submit">Add Expense</button>
       </form>
 
+      {/* LIST */}
       <h3>Expense List</h3>
-
-      <ul>
-        {expenses.map((exp) => (
-          <li key={exp._id}>
-            {exp.category} - Ksh {exp.amount} — {exp.description}
-
-            <button
-              onClick={() => handleDelete(exp._id)}
-              style={{ marginLeft: "10px", color: "red" }}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      {expenses.length === 0 ? (
+        <p>No expenses recorded yet.</p>
+      ) : (
+        <ul>
+          {expenses.map((exp) => (
+            <li key={exp._id}>
+              <strong>{exp.category}</strong> — KES {exp.amount}
+              {exp.description && ` — ${exp.description}`}
+              <button
+                onClick={() => handleDelete(exp._id)}
+                style={{ marginLeft: "10px", color: "red" }}
+              >
+                Delete
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
