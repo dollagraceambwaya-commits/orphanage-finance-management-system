@@ -2,6 +2,12 @@
 A full-stack web application for managing orphanage operations including donations, expenses, children records, and financial reports.
 
 
+## 🌐 Live Demo
+Frontend: [Add your Vercel URL here]     
+API: [Add your Render URL here]
+
+
+
 ## 🚀 Features
 User authentication (JWT-based login/register)  
 Donations tracking and management  
