@@ -85,7 +85,7 @@ DELETE /api/children/:id - Remove child
 | Lucy         | Team Lead           | Project management, integration, deployment |
 | Moureen      | Authentication      | Login/Register, JWT auth, protected routes  |
 | Martin       | Donations           | Donation form, list, edit/delete            |
-| Dollar       | Expenses            | Expense form, list, balance calculations    |
+| Dolla       | Expenses            | Expense form, list, balance calculations    |
 | Patrick      | Dashboard           | Statistics cards, charts, reports           |
 | Naomi        | Children Management | Children profiles, edit, list/cards         |
 | Julie & Mary | UI/Styling          | Navbar, Footer, CSS, responsiveness         |
@@ -94,6 +94,10 @@ DELETE /api/children/:id - Remove child
 
 ## 📄 License
 This project was created for educational purposes as part of IYF Weekend Academy Season 10.
+
+## Live Demo
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blue?style=for-the-badge&logo=vercel)](https://orphanage-finance-management-system-84q7-9xipoxcda.vercel.app)
+
 
 ## 📝 Notes
 Make sure MongoDB is running before starting the backend  
